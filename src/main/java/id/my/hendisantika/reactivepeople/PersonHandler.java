@@ -42,4 +42,18 @@ public class PersonHandler {
         return ok()
                 .body(this.personRepository.findAll(), Person.class);
     }
+
+    /**
+     * Handles a request to get a person by id.
+     *
+     * @param serverRequest The incoming server request.
+     * @return A ServerResponse with the person found or a 404 status if not found.
+     */
+    public Mono<ServerResponse> handleFindById(ServerRequest serverRequest) {
+        var id = Long.parseLong(serverRequest.pathVariable("id"));
+        return this.personRepository.findById(id)
+                .flatMap(person -> ok()
+                        .bodyValue(person))
+                .switchIfEmpty(notFound().build());
+    }
 }
