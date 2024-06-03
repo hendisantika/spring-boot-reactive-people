@@ -11,6 +11,7 @@ package id.my.hendisantika.reactivepeople;
  * To change this template use File | Settings | File Templates.
  */
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
 import static org.springframework.http.ResponseEntity.ok;
@@ -134,5 +137,22 @@ public class PersonHandler {
                                                 .flatMap(this.personRepository::save),
                                         Person.class)))
                 .switchIfEmpty(notFound().build());
+    }
+
+    /**
+     * Validates a person using the Validator.
+     *
+     * @param person The person to validate.
+     * @throws ServerWebInputException If the person is not valid.
+     */
+    private void validate(Person person) {
+        Set<ConstraintViolation<Person>> violations = this.validator.validate(person);
+        if (!violations.isEmpty()) {
+            List<String> errors = violations.stream()
+                    .map(this::formatError)
+                    .toList();
+            log.info("person not valid -> {}", errors);
+            throw new ServerWebInputException(errors.toString());
+        }
     }
 }
