@@ -10,7 +10,7 @@
     </parent>
     <groupId>id.my.hendisantika</groupId>
     <artifactId>reactive-people</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>spring-boot-reactive-people</name>
     <description>Reactive example Webflux, R2DBC, Testcontainers</description>
     <properties>
