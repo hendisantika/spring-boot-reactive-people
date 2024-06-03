@@ -56,4 +56,20 @@ public class PersonHandler {
                         .bodyValue(person))
                 .switchIfEmpty(notFound().build());
     }
+
+    /**
+     * Handles a request to get the first person found by name.
+     *
+     * @param serverRequest The incoming server request.
+     * @return A ServerResponse with the person found or a 404 status if not found.
+     */
+    public Mono<ServerResponse> handleFindFirstByName(ServerRequest serverRequest) {
+        log.info("Handle request {} {}", serverRequest.method(), serverRequest.path());
+        var name = serverRequest.pathVariable("name");
+        Mono<Person> firstByName = this.personRepository.findFirstByName(name);
+        Mono<ServerResponse> notFound = notFound().build();
+        return firstByName.flatMap(person -> ok()
+                        .body(fromValue(person)))
+                .switchIfEmpty(notFound);
+    }
 }
