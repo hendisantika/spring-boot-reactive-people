@@ -20,9 +20,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+
+import static id.my.hendisantika.reactivepeople.Constants.API;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.reactive.function.server.ServerResponse.created;
 
 /**
  * This class is responsible for handling HTTP requests related to the Person entity.
@@ -91,5 +96,21 @@ public class PersonHandler {
                 .flatMap(msg -> ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(msg));
+    }
+
+    /**
+     * Handles a request to create a new person.
+     *
+     * @param serverRequest The incoming server request.
+     * @return A ServerResponse with the created person or a 400 status if the request body is invalid.
+     */
+    public Mono<ServerResponse> handleCreate(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(Person.class)
+                .switchIfEmpty(Mono.error(new ServerWebInputException("person must not be null")))
+                .doOnNext(this::validate)
+                .flatMap(this.personRepository::save)
+                .flatMap(person ->
+                        created(URI.create(API + "/" + person.getId()))
+                                .bodyValue(person));
     }
 }
