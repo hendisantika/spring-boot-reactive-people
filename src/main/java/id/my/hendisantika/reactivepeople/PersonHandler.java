@@ -14,9 +14,12 @@ package id.my.hendisantika.reactivepeople;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -71,5 +74,22 @@ public class PersonHandler {
         return firstByName.flatMap(person -> ok()
                         .body(fromValue(person)))
                 .switchIfEmpty(notFound);
+    }
+
+    /**
+     * Handles a request to delete a person by id.
+     *
+     * @param serverRequest The incoming server request.
+     * @return A ServerResponse with a success message or a 404 status if not found.
+     */
+    public Mono<ServerResponse> handleDeleteById(ServerRequest serverRequest) {
+        var id = Long.parseLong(serverRequest.pathVariable("id"));
+        return this.personRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "person not found")))
+                .flatMap(this.personRepository::delete)
+                .thenReturn("successfully deleted!")
+                .flatMap(msg -> ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(msg));
     }
 }
