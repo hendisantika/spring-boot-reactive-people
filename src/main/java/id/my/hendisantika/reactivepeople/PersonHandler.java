@@ -113,4 +113,26 @@ public class PersonHandler {
                         created(URI.create(API + "/" + person.getId()))
                                 .bodyValue(person));
     }
+
+    /**
+     * Handles a request to update a person by id.
+     *
+     * @param serverRequest The incoming server request.
+     * @return A ServerResponse with the updated person or a 404 status if not found.
+     */
+    public Mono<ServerResponse> handleUpdate(ServerRequest serverRequest) {
+        var id = Long.parseLong(serverRequest.pathVariable("id"));
+        final Mono<Person> update = serverRequest.bodyToMono(Person.class)
+                .doOnNext(this::validate)
+                .switchIfEmpty(Mono.error(new ServerWebInputException("person must not be null")));
+        return this.personRepository.findById(id)
+                .flatMap(old ->
+                        ok().body(
+                                fromPublisher(
+                                        update
+                                                .map(p -> new Person(id, p.getName()))
+                                                .flatMap(this.personRepository::save),
+                                        Person.class)))
+                .switchIfEmpty(notFound().build());
+    }
 }
