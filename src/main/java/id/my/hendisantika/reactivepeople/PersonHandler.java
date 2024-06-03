@@ -15,6 +15,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,10 @@ import java.util.Set;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
+import static org.springframework.web.reactive.function.server.EntityResponse.fromPublisher;
 import static org.springframework.web.reactive.function.server.ServerResponse.created;
+import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
 
 /**
  * This class is responsible for handling HTTP requests related to the Person entity.
@@ -154,5 +158,17 @@ public class PersonHandler {
             log.info("person not valid -> {}", errors);
             throw new ServerWebInputException(errors.toString());
         }
+    }
+
+    /**
+     * Formats a validation error.
+     *
+     * @param personConstraintViolation The validation error.
+     * @return A string representation of the validation error.
+     */
+    private String formatError(ConstraintViolation<Person> personConstraintViolation) {
+        String field = StringUtils.capitalize(personConstraintViolation.getPropertyPath().toString());
+        String error = personConstraintViolation.getMessage();
+        return String.format("%s - %s", field, error);
     }
 }
