@@ -113,4 +113,17 @@ class PersonHandlerTest {
                 .expectBody(String.class)
                 .isEqualTo("successfully deleted!");
     }
+
+    @Test
+    @DisplayName("should handle request delete by unknown id x")
+    void should_handle_delete_by_unknown_id() {
+        when(this.personRepository.findById(1L))
+                .thenReturn(Mono.empty());
+        this.webTestClient
+                .delete()
+                .uri(API + "/1")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
 }
