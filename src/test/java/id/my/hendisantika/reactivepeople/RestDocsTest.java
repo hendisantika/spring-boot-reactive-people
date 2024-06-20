@@ -284,4 +284,17 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .expectBody()
                 .consumeWith(document("handle-create-bad-request"));
     }
+
+    @Test
+    void handleCreateInvalid() {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(new Person(""))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .consumeWith(document("handle-create-invalid"));
+    }
 }
