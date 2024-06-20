@@ -206,4 +206,19 @@ public class RestDocsTest extends PostgreSqlContainer {
                                         .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
     }
 
+    @Test
+    void handleUpdateInvalid() {
+        Person first = this.fetchFirst();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + first.getId())
+                .bodyValue(new Person(first.getId(), ""))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.message").exists()
+                .consumeWith(document("handle-update-invalid"));
+    }
+
 }
