@@ -156,4 +156,16 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .jsonPath("$").isEqualTo("successfully deleted!")
                 .consumeWith(document("handle-delete-by-id"));
     }
+
+    @Test
+    void handleFindByIdNotFound() {
+        this.webTestClient
+                .get()
+                .uri(API + "/9999999")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .consumeWith(document("handle-find-by-id-not-found"));
+    }
 }
