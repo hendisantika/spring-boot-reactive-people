@@ -176,4 +176,20 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .expectBody()
                 .jsonPath("$").isEqualTo("successfully deleted!");
     }
+
+    @Test
+    void handleFindAll() {
+        this.webTestClient
+                .get()
+                .uri(API)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$").isArray()
+                .jsonPath("$[0].id").exists()
+                .jsonPath("$[0].name").isEqualTo("Person@1")
+                .jsonPath("$[1].id").exists()
+                .jsonPath("$[1].name").isEqualTo("Person@2");
+    }
 }
