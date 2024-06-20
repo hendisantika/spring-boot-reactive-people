@@ -3,6 +3,7 @@ package id.my.hendisantika.reactivepeople;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,5 +73,20 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .isOk()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(name);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"00123456789"})
+    @NullAndEmptySource
+    void handleUpdateInvalid(String name) {
+        Person first = this.fetchFirstPerson();
+        var id = first.getId();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + id)
+                .bodyValue(new Person(id, name))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 }
