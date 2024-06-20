@@ -10,7 +10,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -25,8 +25,8 @@ jobs:
           server-id: github
       - name: Configure Git user
         run: |
-          git config user.email "kai.saborowski@googlemail.com"
-          git config user.name "Kai Saborowski"
+          git config user.email "hendisantika@yahoo.co.id"
+          git config user.name "Hendi Santika"
           chmod +x mvnw
       - name: Publish JAR
         run: ./mvnw -B release:prepare release:perform

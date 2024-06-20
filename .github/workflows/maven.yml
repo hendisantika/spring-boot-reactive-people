@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
