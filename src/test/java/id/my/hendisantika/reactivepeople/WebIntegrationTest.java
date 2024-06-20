@@ -202,4 +202,19 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .expectStatus()
                 .isNotFound();
     }
+
+    @Test
+    void handleFindById() {
+        Person first = this.fetchFirstPerson();
+        var id = first.getId();
+        this.webTestClient
+                .get()
+                .uri(API + "/" + id)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(id.toString())
+                .jsonPath("$.name").isEqualTo(first.getName());
+    }
 }
