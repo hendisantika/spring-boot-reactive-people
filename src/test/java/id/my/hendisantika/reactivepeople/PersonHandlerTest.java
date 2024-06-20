@@ -216,4 +216,20 @@ class PersonHandlerTest {
                 .expectStatus()
                 .isNotFound();
     }
+
+    @Test
+    @DisplayName("should handle request find first by name")
+    void should_handle_find_first_by_name() {
+        when(this.personRepository.findFirstByName(any(String.class)))
+                .thenReturn(Mono.just(new Person(1L, "Gojo")));
+        this.webTestClient
+                .get()
+                .uri(API + "/firstByName/Gojo")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(Person.class)
+                .isEqualTo(new Person(1L, "Gojo"));
+    }
+
 }
