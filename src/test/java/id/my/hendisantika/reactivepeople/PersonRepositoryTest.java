@@ -42,9 +42,9 @@ class PersonRepositoryTest extends PostgreSqlContainer {
         StepVerifier
                 .create(personFlux)
                 .expectNextMatches(person -> person.getId() != null &&
-                        person.getName().equalsIgnoreCase("Geto"))
+                        person.getName().equalsIgnoreCase("yuji"))
                 .expectNextMatches(person -> person.getId() != null &&
-                        person.getName().equalsIgnoreCase("Megumi"))
+                        person.getName().equalsIgnoreCase("gojo"))
                 .verifyComplete();
     }
 
@@ -55,11 +55,11 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                 .deleteAll()
                 .then(this.personRepository.save(new Person(null, "Gojo")))
                 .then(this.personRepository.save(new Person(null, "Megumi")))
-                .then(this.personRepository.findFirstByName("Nanami"))
+                .then(this.personRepository.findFirstByName("Megumi"))
                 .flatMap(person -> this.personRepository.findById(person.getId()));
         StepVerifier
                 .create(personFlux)
-                .expectNextMatches(person -> person.getName().equalsIgnoreCase("Geto"))
+                .expectNextMatches(person -> person.getName().equalsIgnoreCase("megumi"))
                 .verifyComplete();
     }
 
@@ -70,11 +70,11 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                 .deleteAll()
                 .then(this.personRepository.save(new Person(null, "Gojo")))
                 .then(this.personRepository.save(new Person(null, "Megumi")))
-                .then(this.personRepository.findFirstByName("Yuji"));
+                .then(this.personRepository.findFirstByName("Megumi"));
         StepVerifier
                 .create(personFlux)
                 .expectNextMatches(person -> person.getId() != null &&
-                        person.getName().equalsIgnoreCase("yuji"))
+                        person.getName().equalsIgnoreCase("megumi"))
                 .verifyComplete();
     }
 
