@@ -2,6 +2,7 @@ package id.my.hendisantika.reactivepeople;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -88,5 +89,16 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
+    }
+
+    @Test
+    void handleUpdateNotFound() {
+        this.webTestClient
+                .put()
+                .uri(API + "/10000000")
+                .bodyValue(new Person(10000000L, "Update"))
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }
