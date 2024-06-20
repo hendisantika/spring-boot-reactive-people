@@ -205,4 +205,15 @@ class PersonHandlerTest {
                 .expectStatus()
                 .isBadRequest();
     }
+
+    @Test
+    @DisplayName("should handle unknown URL")
+    void should_handle_not_found() {
+        this.webTestClient
+                .get()
+                .uri("/api/peole")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
 }
