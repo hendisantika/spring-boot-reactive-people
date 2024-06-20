@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
 
@@ -100,5 +101,18 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+    }
+
+    @Test
+    void handleUpdateBadRequest() {
+        Person person = fetchFirstPerson();
+        var id = person.getId();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + id)
+                .bodyValue(Optional.empty())
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 }
