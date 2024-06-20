@@ -9,8 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -56,5 +58,24 @@ class PersonHandlerTest {
                         new Person(2L, "Megumi"),
                         new Person(3L, "Gojo")
                 );
+    }
+
+    @Test
+    @DisplayName("should handle request find by id x")
+    void should_handle_find_by_id() {
+        when(this.personRepository.findById(1L))
+                .thenReturn(Mono.just(new Person(1L, "Gojo")));
+        this.webTestClient
+                .get()
+                .uri(API + "/1")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(Person.class)
+                .consumeWith(response -> {
+                    assertThat(response.getResponseBody()).isNotNull();
+                    assertThat(response.getResponseBody().getName()).isEqualTo("Gojo");
+                    assertThat(response.getResponseBody().getId()).isEqualTo(1L);
+                });
     }
 }
