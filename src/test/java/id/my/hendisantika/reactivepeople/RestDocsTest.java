@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -63,5 +64,10 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .create(personFlux)
                 .expectNextCount(100L)
                 .verifyComplete();
+    }
+
+    public List<String> constraintDescriptionForProperty(String property) {
+        ConstraintDescriptions userConstraints = new ConstraintDescriptions(Person.class);
+        return userConstraints.descriptionsForProperty(property);
     }
 }
