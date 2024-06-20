@@ -248,4 +248,27 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .expectBody()
                 .consumeWith(document("handle-update-bad-request"));
     }
+
+    @Test
+    void handleCreate() {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(new Person("New-Person"))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader()
+                .exists("Location")
+                .expectBody()
+                .consumeWith(document("handle-create",
+                        responseFields(
+                                fieldWithPath("id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("The person's id")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("id"))),
+                                fieldWithPath("name")
+                                        .type(JsonFieldType.STRING)
+                                        .description("The person's name")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
+    }
 }
