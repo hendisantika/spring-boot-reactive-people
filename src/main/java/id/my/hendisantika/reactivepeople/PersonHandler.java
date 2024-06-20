@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Set;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
 import static org.springframework.web.reactive.function.BodyInserters.fromValue;
-import static org.springframework.web.reactive.function.server.EntityResponse.fromPublisher;
 import static org.springframework.web.reactive.function.server.ServerResponse.created;
 import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 /**
  * This class is responsible for handling HTTP requests related to the Person entity.
@@ -162,7 +162,6 @@ public class PersonHandler {
 
     /**
      * Formats a validation error.
-     *
      * @param personConstraintViolation The validation error.
      * @return A string representation of the validation error.
      */
