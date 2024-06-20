@@ -18,6 +18,7 @@ import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -232,5 +233,19 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .expectStatus().isNotFound()
                 .expectBody()
                 .consumeWith(document("handle-update-not-found"));
+    }
+
+    @Test
+    void handleUpdateBadRequest() {
+        Person first = this.fetchFirst();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + first.getId())
+                .bodyValue(Optional.empty())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .consumeWith(document("handle-update-bad-request"));
     }
 }
