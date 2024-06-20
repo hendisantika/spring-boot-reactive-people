@@ -3,6 +3,8 @@ package id.my.hendisantika.reactivepeople;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -125,5 +127,24 @@ class PersonHandlerTest {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"N", "Name123456"})
+    @DisplayName("should successfully handle request create person")
+    void should_handle_create_person(String name) {
+        Person person = new Person(1L, name);
+        Mono<Person> personMono = Mono.just(person);
+        when(this.personRepository.save(person))
+                .thenReturn(personMono);
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(person)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody(Person.class)
+                .isEqualTo(person);
     }
 }
