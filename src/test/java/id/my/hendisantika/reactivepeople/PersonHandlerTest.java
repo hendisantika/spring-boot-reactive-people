@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -146,5 +147,19 @@ class PersonHandlerTest {
                 .isCreated()
                 .expectBody(Person.class)
                 .isEqualTo(person);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"Name1234567"})
+    @NullAndEmptySource
+    @DisplayName("should successfully handle request create invalid person")
+    void should_handle_create_invalid_person(String name) {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(new Person(name))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 }
