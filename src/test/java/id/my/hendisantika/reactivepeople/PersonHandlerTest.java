@@ -78,4 +78,17 @@ class PersonHandlerTest {
                     assertThat(response.getResponseBody().getId()).isEqualTo(1L);
                 });
     }
+
+    @Test
+    @DisplayName("should handle request find by unknown id x")
+    void should_handle_find_by_unknown_id() {
+        when(this.personRepository.findById(1000L))
+                .thenReturn(Mono.empty());
+        this.webTestClient
+                .get()
+                .uri(API + "/1000")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
 }
