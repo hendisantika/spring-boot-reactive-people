@@ -3,6 +3,7 @@ package id.my.hendisantika.reactivepeople;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,5 +38,15 @@ class PersonTest {
         Person person = new Person(name);
         var violations = this.validator.validate(person);
         assertThat(violations).isEmpty();
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"01234567890"})
+    void should_create_invalid_person(String name) {
+        Person person = new Person(name);
+        var violations = this.validator.validate(person);
+        assertThat(violations).isNotEmpty();
+        violations.forEach(System.out::println);
     }
 }
