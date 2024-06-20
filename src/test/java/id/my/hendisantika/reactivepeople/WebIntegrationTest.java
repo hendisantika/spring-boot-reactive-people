@@ -130,4 +130,20 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Name");
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"N", "Name", "0123456789"})
+    void handleCreateValid(String name) {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(new Person(name))
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectHeader()
+                .exists("Location")
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(name);
+    }
 }
