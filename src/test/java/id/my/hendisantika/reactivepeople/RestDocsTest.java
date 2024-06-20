@@ -140,4 +140,20 @@ public class RestDocsTest extends PostgreSqlContainer {
                                         .description("The person's name")
                                         .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
     }
+
+    @Test
+    void handleDeleteById() {
+        Person first = this.fetchFirst();
+        this.webTestClient
+                .delete()
+                .uri(API + "/" + first.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$").isEqualTo("successfully deleted!")
+                .consumeWith(document("handle-delete-by-id"));
+    }
 }
