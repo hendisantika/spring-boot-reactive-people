@@ -184,4 +184,25 @@ class PersonHandlerTest {
                 .expectBody(Person.class)
                 .isEqualTo(person);
     }
+
+    /**
+     * Handle validation
+     * name is null
+     * name is empty
+     * name length gt 10
+     *
+     * @param name the name type String
+     */
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"01234567890"})
+    void should_handle_person_not_valid(String name) {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(new Person(name))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+    }
 }
