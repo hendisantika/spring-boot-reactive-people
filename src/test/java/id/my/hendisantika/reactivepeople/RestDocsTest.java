@@ -221,4 +221,16 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .consumeWith(document("handle-update-invalid"));
     }
 
+    @Test
+    void handleUpdateNotFound() {
+        this.webTestClient
+                .put()
+                .uri(API + "/999999999")
+                .bodyValue(new Person(999999999L, "Update"))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .consumeWith(document("handle-update-not-found"));
+    }
 }
