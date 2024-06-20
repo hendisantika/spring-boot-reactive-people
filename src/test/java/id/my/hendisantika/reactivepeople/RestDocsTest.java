@@ -1,11 +1,13 @@
 package id.my.hendisantika.reactivepeople;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
@@ -16,6 +18,7 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
 /**
@@ -69,5 +72,18 @@ public class RestDocsTest extends PostgreSqlContainer {
     public List<String> constraintDescriptionForProperty(String property) {
         ConstraintDescriptions userConstraints = new ConstraintDescriptions(Person.class);
         return userConstraints.descriptionsForProperty(property);
+    }
+
+    @Test
+    void handleNotFound() {
+        this.webTestClient
+                .get()
+                .uri("/api/peple")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .consumeWith(document("not-found"));
     }
 }
