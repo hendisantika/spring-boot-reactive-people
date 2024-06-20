@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -161,5 +162,26 @@ class PersonHandlerTest {
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Name123456"})
+    @DisplayName("should successfully handle request update person")
+    void should_handle_update_person(String name) {
+        Person person = new Person(1L, name);
+        Mono<Person> personMono = Mono.just(person);
+        when(this.personRepository.findById(any(Long.class)))
+                .thenReturn(Mono.just(new Person(1L, "Gojo")));
+        when(this.personRepository.save(person))
+                .thenReturn(personMono);
+        this.webTestClient
+                .put()
+                .uri(API + "/1")
+                .bodyValue(person)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(Person.class)
+                .isEqualTo(person);
     }
 }
