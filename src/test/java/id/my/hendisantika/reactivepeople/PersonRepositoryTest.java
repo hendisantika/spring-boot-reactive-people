@@ -95,4 +95,13 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                 .expectNext(0L)
                 .verifyComplete();
     }
+
+    @Test
+    @DisplayName("should be empty result")
+    void should_be_empty_result() {
+        Mono<Person> byId = this.personRepository.findById(11111111L);
+        StepVerifier
+                .create(byId)
+                .verifyComplete();
+    }
 }
