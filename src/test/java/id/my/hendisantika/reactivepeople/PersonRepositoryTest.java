@@ -63,4 +63,19 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                 .verifyComplete();
     }
 
+    @Test
+    @DisplayName("should find first person by name x")
+    void should_find_first_person_by_name() {
+        Mono<Person> personFlux = this.personRepository
+                .deleteAll()
+                .then(this.personRepository.save(new Person(null, "Gojo")))
+                .then(this.personRepository.save(new Person(null, "Megumi")))
+                .then(this.personRepository.findFirstByName("Yuji"));
+        StepVerifier
+                .create(personFlux)
+                .expectNextMatches(person -> person.getId() != null &&
+                        person.getName().equalsIgnoreCase("yuji"))
+                .verifyComplete();
+    }
+
 }
