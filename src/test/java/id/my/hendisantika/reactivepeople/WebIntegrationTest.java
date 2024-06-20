@@ -45,4 +45,13 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .expectNextCount(100L)
                 .verifyComplete();
     }
+
+    Person fetchFirstPerson() {
+        var person = this.personRepository
+                .findTopByOrderByIdAsc()
+                .block();
+        log.info("First Person found: {}", person);
+        return person;
+    }
+
 }
