@@ -116,4 +116,28 @@ public class RestDocsTest extends PostgreSqlContainer {
                                         .description("The person's name")
                                         .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
     }
+
+    @Test
+    void handleFindById() {
+        Person first = this.fetchFirst();
+        this.webTestClient
+                .get()
+                .uri(API + "/" + first.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(first.getId())
+                .jsonPath("$.name").isEqualTo(first.getName())
+                .consumeWith(document("handle-find-by-id",
+                        responseFields(
+                                fieldWithPath("id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("The person's id")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("id"))),
+                                fieldWithPath("name")
+                                        .type(JsonFieldType.STRING)
+                                        .description("The person's name")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
+    }
 }
