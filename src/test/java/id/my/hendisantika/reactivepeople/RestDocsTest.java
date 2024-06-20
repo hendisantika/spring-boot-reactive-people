@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -18,6 +19,10 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static id.my.hendisantika.reactivepeople.Constants.API;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
@@ -85,5 +90,30 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .isNotFound()
                 .expectBody()
                 .consumeWith(document("not-found"));
+    }
+
+    @Test
+    void handleFindAll() {
+        this.webTestClient
+                .get()
+                .uri(API)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.[0].id").exists()
+                .jsonPath("$.[0].name").isEqualTo("Person@1")
+                .jsonPath("$.[1].id").exists()
+                .jsonPath("$.[1].name").isEqualTo("Person@2")
+                .consumeWith(document("handle-find-all",
+                        responseFields(
+                                fieldWithPath("[].id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("The person's id")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("id"))),
+                                fieldWithPath("[].name")
+                                        .type(JsonFieldType.STRING)
+                                        .description("The person's name")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
     }
 }
