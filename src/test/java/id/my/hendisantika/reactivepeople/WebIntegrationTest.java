@@ -2,6 +2,8 @@ package id.my.hendisantika.reactivepeople;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -9,6 +11,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
+
+import static id.my.hendisantika.reactivepeople.Constants.API;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,4 +58,19 @@ public class WebIntegrationTest extends PostgreSqlContainer {
         return person;
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"N", "Name", "0123456789"})
+    void handleUpdateValid(String name) {
+        Person first = this.fetchFirstPerson();
+        var id = first.getId();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + id)
+                .bodyValue(new Person(id, name))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(name);
+    }
 }
