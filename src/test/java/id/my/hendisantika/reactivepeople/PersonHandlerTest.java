@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -90,5 +92,25 @@ class PersonHandlerTest {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+    }
+
+    @Test
+    @DisplayName("should handle request delete by id x")
+    void should_handle_delete_by_id() {
+        Person person = new Person(1L, "Gojo");
+        when(this.personRepository.findById(any(Long.class)))
+                .thenReturn(Mono.just(person));
+        when(this.personRepository.delete(any(Person.class)))
+                .thenReturn(Mono.empty());
+        this.webTestClient
+                .delete()
+                .uri(API + "/1")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody(String.class)
+                .isEqualTo("successfully deleted!");
     }
 }
