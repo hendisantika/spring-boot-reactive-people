@@ -271,4 +271,17 @@ public class RestDocsTest extends PostgreSqlContainer {
                                         .description("The person's name")
                                         .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
     }
+
+    @Test
+    void handleCreateBadRequest() {
+        this.webTestClient
+                .post()
+                .uri(API)
+                .bodyValue(Optional.empty())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .consumeWith(document("handle-create-bad-request"));
+    }
 }
