@@ -78,4 +78,21 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                 .verifyComplete();
     }
 
+    @Test
+    @DisplayName("should delete person by id x")
+    void should_delete_person_by_id() {
+        this.personRepository
+                .deleteAll()
+                .then(this.personRepository.save(new Person(null, "Gojo")))
+                .block();
+        Person first = this.findFirst();
+        Mono<Long> longMono = this.personRepository
+                .findById(first.getId())
+                .flatMap(this.personRepository::delete)
+                .then(this.personRepository.count());
+        StepVerifier
+                .create(longMono)
+                .expectNext(0L)
+                .verifyComplete();
+    }
 }
