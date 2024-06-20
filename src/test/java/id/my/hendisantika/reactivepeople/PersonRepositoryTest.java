@@ -17,6 +17,13 @@ import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 class PersonRepositoryTest extends PostgreSqlContainer {
 
     @Autowired
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
+
+    private Person findFirst() {
+        var first = this.personRepository
+                .findTopByOrderByIdAsc()
+                .block();
+        return first;
+    }
 
 }
