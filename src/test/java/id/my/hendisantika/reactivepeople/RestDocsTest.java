@@ -1,8 +1,10 @@
 package id.my.hendisantika.reactivepeople;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
@@ -23,4 +25,14 @@ public class RestDocsTest extends PostgreSqlContainer {
     private PersonRepository personRepository;
 
     private WebTestClient webTestClient;
+
+    @RegisterExtension
+    final RestDocumentationExtension restDocumentation = new RestDocumentationExtension();
+
+    private Person fetchFirst() {
+        var person = this.personRepository
+                .findTopByOrderByIdAsc()
+                .block();
+        return person;
+    }
 }
