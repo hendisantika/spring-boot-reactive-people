@@ -180,4 +180,30 @@ public class RestDocsTest extends PostgreSqlContainer {
                 .expectBody()
                 .consumeWith(document("handle-delete-by-id-not-found"));
     }
+
+    @Test
+    void handleUpdate() {
+        Person first = this.fetchFirst();
+        this.webTestClient
+                .put()
+                .uri(API + "/" + first.getId())
+                .bodyValue(new Person(first.getId(), "Update"))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(first.getId())
+                .jsonPath("$.name").isEqualTo("Update")
+                .consumeWith(document("handle-update",
+                        responseFields(
+                                fieldWithPath("id")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("The person's id")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("id"))),
+                                fieldWithPath("name")
+                                        .type(JsonFieldType.STRING)
+                                        .description("The person's name")
+                                        .attributes(key("constraints").value(constraintDescriptionForProperty("name"))))));
+    }
+
 }
