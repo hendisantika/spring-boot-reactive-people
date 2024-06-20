@@ -232,4 +232,16 @@ class PersonHandlerTest {
                 .isEqualTo(new Person(1L, "Gojo"));
     }
 
+    @Test
+    @DisplayName("should handle request find first by name not found")
+    void should_handle_find_first_by_name_not_found() {
+        when(this.personRepository.findFirstByName(any(String.class)))
+                .thenReturn(Mono.empty());
+        this.webTestClient
+                .get()
+                .uri(API + "/firstByName/Yuji")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
 }
