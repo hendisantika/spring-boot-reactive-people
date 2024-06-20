@@ -2,6 +2,8 @@ package id.my.hendisantika.reactivepeople;
 
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -29,4 +31,11 @@ class PersonTest {
         assertThat(person.getName()).isEqualTo("Gojo");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"N", "Name", "0123456789"})
+    void should_create_valid_person(String name) {
+        Person person = new Person(name);
+        var violations = this.validator.validate(person);
+        assertThat(violations).isEmpty();
+    }
 }
