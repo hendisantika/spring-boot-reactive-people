@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 /**
@@ -44,6 +45,21 @@ class PersonRepositoryTest extends PostgreSqlContainer {
                         person.getName().equalsIgnoreCase("Geto"))
                 .expectNextMatches(person -> person.getId() != null &&
                         person.getName().equalsIgnoreCase("Megumi"))
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("should find person by id x")
+    void should_find_person_by_id() {
+        Mono<Person> personFlux = this.personRepository
+                .deleteAll()
+                .then(this.personRepository.save(new Person(null, "Gojo")))
+                .then(this.personRepository.save(new Person(null, "Megumi")))
+                .then(this.personRepository.findFirstByName("Nanami"))
+                .flatMap(person -> this.personRepository.findById(person.getId()));
+        StepVerifier
+                .create(personFlux)
+                .expectNextMatches(person -> person.getName().equalsIgnoreCase("Geto"))
                 .verifyComplete();
     }
 
