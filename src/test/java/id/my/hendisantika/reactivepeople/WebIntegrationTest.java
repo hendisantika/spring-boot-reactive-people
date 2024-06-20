@@ -192,4 +192,14 @@ public class WebIntegrationTest extends PostgreSqlContainer {
                 .jsonPath("$[1].id").exists()
                 .jsonPath("$[1].name").isEqualTo("Person@2");
     }
+
+    @Test
+    void handleNotFound() {
+        this.webTestClient
+                .get()
+                .uri("/api/peple")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
 }
