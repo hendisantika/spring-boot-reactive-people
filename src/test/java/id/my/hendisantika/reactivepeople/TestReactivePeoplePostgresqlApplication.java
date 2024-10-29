@@ -27,7 +27,7 @@ public class TestReactivePeoplePostgresqlApplication {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:17beta1-alpine3.20"))
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:17-alpine3.20"))
                 .withReuse(true)
                 .withInitScript("schema.sql");
     }

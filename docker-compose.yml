@@ -1,6 +1,6 @@
 services:
-  postgres:
-    image: postgres:17beta1-alpine3.20
+  postgres17:
+    image: postgres:17-alpine3.20
     network_mode: bridge
     container_name: postgres
     volumes:
@@ -9,7 +9,7 @@ services:
     expose:
       - 5433
     ports:
-      - 5433:5432
+      - "5433:5432"
     environment:
       - POSTGRES_DB=people
       - POSTGRES_USER=yuji

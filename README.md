@@ -27,7 +27,7 @@
 If you have Docker installed, grab a PostgreSQL image from Docker Hub and run the image.
 
 ```bash
-docker pull postgres:17beta1-alpine3.20
+docker pull postgres:17-alpine3.20
 docker run --name postgresql -e POSTGRESQL_PASSWORD=password123 -e POSTGRES_DB=people -p 5432:5432 postgres:17beta1-alpine3.20
 ```
 

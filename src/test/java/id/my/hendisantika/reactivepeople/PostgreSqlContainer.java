@@ -20,7 +20,7 @@ public abstract class PostgreSqlContainer {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17beta1-alpine3.20")
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine3.20")
             .withInitScript("schema.sql")
             .withReuse(true);
 }
