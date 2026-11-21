@@ -17,8 +17,9 @@ updates:
     assignees:
       - "hendisantika"
     commit-message:
-      prefix: "build(deps)"
-      prefix-development: "build(deps-dev)"
+      # "include: scope" appends (deps) / (deps-dev) -> build(deps): ... / build(deps-dev): ...
+      prefix: "build"
+      prefix-development: "build"
       include: "scope"
     groups:
       spring-boot:
