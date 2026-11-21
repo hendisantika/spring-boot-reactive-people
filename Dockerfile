@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-alpine
+FROM eclipse-temurin:25-jre-alpine
 LABEL authors="hendisantika"
 MAINTAINER hendisantika@yahoo.co.id
 

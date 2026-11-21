@@ -14,7 +14,7 @@
     <name>spring-boot-reactive-people</name>
     <description>Reactive example Webflux, R2DBC, Testcontainers</description>
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <springdoc-openapi-starter-webflux-ui.version>3.1.1</springdoc-openapi-starter-webflux-ui.version>
     </properties>
     <dependencies>
