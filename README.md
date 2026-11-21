@@ -1,85 +1,126 @@
 # spring-boot-reactive-people
 
-# reactive-people-postgresql
+Reactive Spring Boot example covering **WebFlux**, **R2DBC**, **Testcontainers**, **OpenAPI** and **Spring REST Docs**.
 
-#### reactive Spring Boot example, covering Webflux, R2dbc, Testcontainers, Open API, RestDocs.
+[![Java CI with Maven](https://github.com/hendisantika/spring-boot-reactive-people/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/spring-boot-reactive-people/actions/workflows/maven.yml)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-6DB33F?logo=springboot)
+![Testcontainers](https://img.shields.io/badge/Testcontainers-2.x-2F7CF6)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot)](.github/dependabot.yml)
 
-![Java CI with Maven](https://github.com/hendisantika/spring-boot-reactive-people/workflows/Java%20CI%20with%20Maven/badge.svg)
+## Tech Stack
 
-**Prerequisites:**
+| Component          | Version / Notes                                      |
+|--------------------|------------------------------------------------------|
+| Java               | 25 (Eclipse Temurin)                                 |
+| Spring Boot        | 4.1.1 (WebFlux, Data R2DBC, Validation, Actuator)    |
+| Database           | PostgreSQL 17 (R2DBC + JDBC driver)                  |
+| API documentation  | springdoc-openapi 3.x (Swagger UI), Spring REST Docs |
+| Testing            | JUnit 5, Reactor Test, Testcontainers 2.x            |
+| Build              | Maven (wrapper included)                             |
 
-* [Java 21](https://openjdk.net/)
-* [Apache Maven](https:http://maven.apache.org/)
-* [Docker](https://www.docker.com/)
-* Optional [Postman](https://www.postman.com/)
+## Prerequisites
 
-**Themes:**
+* [JDK 25](https://adoptium.net/temurin/releases/?version=25)
+* [Apache Maven](https://maven.apache.org/) (or use the bundled `./mvnw`)
+* [Docker](https://www.docker.com/) – required for Testcontainers and Docker Compose
+* Optional: [Postman](https://www.postman.com/)
 
-* Spring Webflux
-* Router Functions/Handler Functions
-* R2DBC Database Connectivity
-* Unit Testing
-* Integration Testing with Testcontainers
-* Docker build/compose
-* OpenAPI / Swagger API Documentation
-* Spring RestDocs documentation
+## Themes
 
-If you have Docker installed, grab a PostgreSQL image from Docker Hub and run the image.
+* Spring WebFlux
+* Router Functions / Handler Functions
+* R2DBC database connectivity
+* Unit testing (`@WebFluxTest` + `@MockitoBean`, `@DataR2dbcTest`)
+* Integration testing with Testcontainers
+* Docker build / Compose
+* OpenAPI / Swagger API documentation
+* Spring REST Docs documentation
 
-```bash
-docker pull postgres:17-alpine3.20
-docker run --name postgresql -e POSTGRESQL_PASSWORD=password123 -e POSTGRES_DB=people -p 5432:5432 postgres:17beta1-alpine3.20
-```
+## Database
 
-Or else, grab the app image via
-
-```bash
-docker pull hendisantika/reactive-people-postgresql:1.0.0
-```
-
-Application properties can be configured in
-
-```bash
-spring-boot-reactive-people/src/main/resources/application.properties
-```
-
-#### How to build and run
-
-Type
+The app expects PostgreSQL on `localhost:5433` (see `src/main/resources/application.properties`).
+The easiest way is Docker Compose, which also initialises the schema from `schema.sql`:
 
 ```bash
-mvn clean package
-mvn clean spring-boot:run
+docker compose up -d
 ```
 
-to build and run the application on your local environment.
-
-To run the app as a Docker Container type the following commands to build
-an run the image:
+Or run PostgreSQL manually:
 
 ```bash
-docker build ./ -t reactive-people-postgresql
-docker-compose up --force-recreate
+docker run --name postgres -e POSTGRES_USER=yuji -e POSTGRES_PASSWORD=Password123 \
+  -e POSTGRES_DB=people -p 5433:5432 -d postgres:17-alpine3.20
 ```
 
-Use curl, httpie etc. to call the HTTP Endpoints, or use Postman, a collection file is located under
+Spring Boot's Docker Compose support (`spring-boot-docker-compose`) will also start
+`docker-compose.yml` automatically when you run the app locally.
+
+## How to build, test and run
 
 ```bash
-reactive-people-postgresql.postman_collection.json
+# build & run all tests (Docker must be running for Testcontainers)
+./mvnw clean package
+
+# run the application
+./mvnw spring-boot:run
 ```
 
-Point your browser to
+You can also start the app with a throw-away Testcontainers PostgreSQL instance by running
+`TestReactivePeoplePostgresqlApplication` from `src/test/java`.
+
+### Docker image
 
 ```bash
-http://localhost:8080/swagger-ui
+./mvnw clean package -DskipTests
+docker build -t reactive-people-postgresql .
+docker run -p 8080:8080 reactive-people-postgresql
 ```
 
-to try out the API or see the documentation.
+The image is based on `eclipse-temurin:25-jre-alpine` and runs with the `docker` Spring profile.
 
-Point your browser to
+## API
+
+| Method | Path               | Description           |
+|--------|--------------------|-----------------------|
+| GET    | `/api/people`      | List all people       |
+| GET    | `/api/people/{id}` | Find a person by id   |
+| GET    | `/api/people/firstByName/{name}` | Find the first person by name |
+| POST   | `/api/people`      | Create a person       |
+| PUT    | `/api/people/{id}` | Update a person       |
+| DELETE | `/api/people/{id}` | Delete a person by id |
+
+Example:
 
 ```bash
-http://localhost:8080/docs/index.html
+curl -X POST http://localhost:8080/api/people \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Gojo"}'
 ```
 
-to read the RestDOCs API documentation. 
+### Documentation
+
+* Swagger UI: <http://localhost:8080/swagger-ui>
+* OpenAPI JSON: <http://localhost:8080/v3/api-docs>
+* REST Docs (generated during `package`): <http://localhost:8080/docs/index.html>
+
+## CI/CD & Automation
+
+* **Java CI with Maven** (`.github/workflows/maven.yml`) – builds and tests on JDK 25 for every push / PR to `main`.
+  Testcontainers uses the Docker daemon of the GitHub-hosted runner.
+* **Release Drafter** – drafts release notes from merged PRs.
+* **Release** – publishes the JAR on `v*` tags.
+* **Dependabot** (`.github/dependabot.yml`) – weekly, grouped updates for Maven
+  (Spring Boot, Spring, springdoc, Testcontainers, Maven plugins), GitHub Actions,
+  the Dockerfile base image and Docker Compose services.
+
+## Notes on Spring Boot 4 migration
+
+* Testcontainers 2.x artifacts are prefixed with `testcontainers-` (e.g. `testcontainers-postgresql`)
+  and `PostgreSQLContainer` lives in `org.testcontainers.postgresql`.
+* Test slices moved to dedicated modules (`spring-boot-starter-webflux-test`,
+  `spring-boot-starter-data-r2dbc-test`); `@MockBean` is replaced by `@MockitoBean`.
+* `@SpringBootTest` needs `@AutoConfigureWebTestClient` to inject a `WebTestClient`.
+* `server.error.*` properties are now `spring.web.error.*`.
+* From JDK 23 onward, annotation processors (Lombok) must be declared in
+  `maven-compiler-plugin` `annotationProcessorPaths`.
