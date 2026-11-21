@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 import static id.my.hendisantika.reactivepeople.Constants.API;
-import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
 import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 import static org.springframework.web.reactive.function.server.ServerResponse.created;
 import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
@@ -133,13 +132,10 @@ public class PersonHandler {
                 .doOnNext(this::validate)
                 .switchIfEmpty(Mono.error(new ServerWebInputException("person must not be null")));
         return this.personRepository.findById(id)
-                .flatMap(old ->
-                        ok().body(
-                                fromPublisher(
-                                        update
-                                                .map(p -> new Person(id, p.getName()))
-                                                .flatMap(this.personRepository::save),
-                                        Person.class)))
+                .flatMap(old -> update
+                        .map(p -> new Person(id, p.getName()))
+                        .flatMap(this.personRepository::save)
+                        .flatMap(saved -> ok().bodyValue(saved)))
                 .switchIfEmpty(notFound().build());
     }
 

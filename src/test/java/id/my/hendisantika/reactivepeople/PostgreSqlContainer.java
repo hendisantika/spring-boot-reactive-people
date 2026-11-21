@@ -1,7 +1,7 @@
 package id.my.hendisantika.reactivepeople;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -20,7 +20,7 @@ public abstract class PostgreSqlContainer {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine3.20")
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine3.20")
             .withInitScript("schema.sql")
             .withReuse(true);
 }
